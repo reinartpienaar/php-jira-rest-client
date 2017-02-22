@@ -128,4 +128,71 @@ class ProjectService extends \JiraRestApi\JiraClient
 
         return $type;
     }
+
+//
+//    Newly added function around project
+//
+
+    /**
+     * Update project.
+     *
+     * @param   $projectIdOrKey Project Key
+     * @param   $projectField   object of Project class
+     *
+     * @return created issue key
+     */
+    public function update($projectIdOrKey, $projectField)
+    {
+        $data = json_encode($projectField);
+
+        $this->log->addInfo("Update Project=\n".$data);
+
+        $ret = $this->exec($this->uri."/$projectIdOrKey", $data, 'PUT');
+
+        $prj = $this->json_mapper->map(
+            json_decode($ret), new Project()
+        );
+
+        return $prj;
+    }
+
+    /**
+     * Create new project.
+     *
+     * @param   $projectField object of Project class
+     *
+     * @return created project
+     */
+    public function create($projectField)
+    {
+        $data = json_encode($projectField);
+
+        $this->log->addInfo("Create Project=\n".$data);
+
+        $ret = $this->exec($this->uri, $data, 'POST');
+
+        $prj = $this->json_mapper->map(
+            json_decode($ret), new Project()
+        );
+
+        return $prj;
+    }
+
+    /**
+     * Delete a project.
+     *
+     * @param $projectIdOrKey Project id or key
+     *
+     * @return true | false
+     */
+    public function deleteProject($projectIdOrKey)
+    {
+        $this->log->addInfo("deleteIssue=\n");
+
+        $ret = $this->exec($this->uri."/$projectIdOrKey", '', 'DELETE');
+
+        $this->log->addInfo('delete issue '.$projectIdOrKey.' result='.var_export($ret, true));
+
+        return $ret;
+    }
 }
